@@ -1,0 +1,852 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>广东省网上办事大厅深圳市宝安分厅</title>
+		<link href="/r/cms/www/blue_webhall/newcss/css.css" type="text/css" rel="stylesheet" />
+		<link href="/r/cms/www/blue_webhall/new/css/sbweb.css" type="text/css" rel="stylesheet" />
+		<script type="text/javascript" src="/r/cms/captcha.js"></script>
+		<script type="text/javascript" src="/r/cms/ocx_bjca.js"></script>
+		<script type="text/javascript" src="/r/cms/bid_bjca.js"></script>
+		<script src="/r/cms/jquery.js" type="text/javascript"></script>
+		<script type="text/javascript">
+
+			function sub(){
+				if(/[~#^$@%&!*<>/]/gi.test($("#username").val())){
+   					alert("姓名含有非法字符!");
+   					$("#username").focus();
+					return false;
+ 				}
+ 				if(/[~#^$@%&!*<>/]/gi.test($("#password").val())){
+   					alert("密码含有非法字符!");
+   					$("#password").focus();
+					return false;
+ 				}
+ 				if(/[~#^$@%&!*<>/]/gi.test($("input[captchad='captchad']").val())){
+   					alert("验证码含有非法字符!");
+   					$("input[captchad='captchad']").focus();
+					return false;
+ 				}
+				var r = true;
+				if($("#username").val() == "" || $("#username").val() == "用户名/手机号/身份证号"){
+					$("#usernameSpan").html("<font color='red'>请输入账号</font>")
+					r = false;
+				}else{
+					$("#usernameSpan").html("")
+				}
+				if($("#password").val() == ""){
+					$("#passwordSpan").html("<font color='red'>请输入密码</font>")
+					r = false;
+				}else{
+					$("#passwordSpan").html("")
+				}
+				if($("input[captchad='captchad']").val() == ""){
+					$("#captchaSpan").html("<font color='red'>请输入验证码</font>")
+					r = false;
+				}
+				if(!r){
+					return false;
+				}
+				syncCaptcha("captcha",loginSubmit);
+			}
+
+			function loginSubmit(rv){
+				// 个人  ：/member/enterpriseLogingr.jspx
+				// 企业  ：/member/enterpriseLogin.jspx
+				var loginto = $("#loginto").val();
+				if(loginto=="enterpriseLogingr"){
+					///member/enterpriseIndexgr.jspx
+					 $("#returnUrl").val("/member/enterpriseIndexgr.jspx");
+					 $("#jvForm").attr("action", "/member/enterpriseLogingr.jspx").submit();
+				}else if(loginto=="enterpriseLogin"){
+					 $("#returnUrl").val("/member/enterpriseIndex.jspx");
+					 $("#jvForm").attr("action", "/member/enterpriseLogin.jspx").submit();
+				}else{
+					$("#jvForm").submit();
+				}
+
+			}
+
+			var type='userLogin';
+			$(document).ready(function(){
+				captchaInit("r");
+				$("#jvForm").validate();
+				if(type=='userLogin'){
+				   document.getElementById('userLogin').style.display='';
+				   document.getElementById('caLogin').style.display='none';
+				}else{
+				   document.getElementById('caLogin').style.display='';
+				   document.getElementById('userLogin').style.display='none';
+				}
+				opt_psw();//密码显示
+			});
+			function register(){
+				window.location.href="/register.jspx";
+			}
+			function downHelp(){
+				window.location.href="/show/shiyongbangzhu.jspx";//"/downloadHelpFile.jspx";
+			}
+
+			function opt_psw(){
+               var btn=document.getElementById("hidePsw");
+               var pass=document.getElementById("pwd");
+                btn.onmousedown=function(){
+
+                  pass.value=document.getElementById("password").value;
+                  pass.type="text";
+
+                };
+                btn.onmouseup=btn.onmouseout=function(){
+                    pass.type="password"
+                }
+			}
+
+			function onLogin(type){
+				if(type=='userLogin'){
+				   document.getElementById('userLogin').style.display='';
+				   document.getElementById('caLogin').style.display='none';
+				}else{
+				   document.getElementById('caLogin').style.display='';
+				   document.getElementById('userLogin').style.display='none';
+				}
+			}
+
+			function caSub(){
+			    document.getElementById("LoginForm").submit();
+			}
+
+			function caRegister(){
+			   window.location.href="/caRegister.jspx";
+			}
+			function hiddenPass(){
+				var pass= document.getElementById('pwd');
+				var pass1= document.getElementById('password');
+				var keycode ="";
+				var isFirefox=navigator.userAgent.toUpperCase().indexOf("FIREFOX")>-1?true:false;
+				var isMsie=navigator.userAgent.toUpperCase().indexOf("MSIE")>-1?false:true;
+				var isChrome=navigator.userAgent.toUpperCase().indexOf("CHROME")>-1?false:true;
+
+					if(isFirefox && isMsie && isChrome){
+						keycode =  hiddenPass.caller.arguments[0].which;
+					 }else{
+						 keycode=event.keyCode;
+					 }
+					if(keycode==13){
+						userLogin();
+					}
+					if(keycode==8){
+					}else{
+						var keychar=String.fromCharCode(keycode);
+						pass1.value=pass1.value+keychar;
+						pass1.value=pass1.value.substring(0,pass.length);
+					}
+
+			}
+			function onkeyuppass(pass){
+				var pass1= document.getElementById('password');
+				if(pass1.value == ""){
+					pass1.value=pass.value;
+				}
+				pass.value=pass.value.replace(/./g,'*');
+				if(pass.value == ""){
+					pass1.value = "";
+				}
+			}
+
+			function checkusername(check){
+				var checkval = check.value;
+				if(checkval=="用户名/手机号/身份证号"){
+					check.value = "";
+				}
+
+			}
+			function checkusernameoff(ckeck){
+				if(ckeck.value == ""){
+					$("#username").val("用户名/手机号/身份证号");
+				}
+			}
+
+			function checkpwdoff(ckeck){
+				if(ckeck.value == ""){
+					$("#pwd").val("请输入您的密码");
+					$("#password").val("请输入您的密码");
+				}
+			}
+			function backspace(){
+				var isFirefox=navigator.userAgent.toUpperCase().indexOf("FIREFOX")>-1?true:false;
+				var isMsie=navigator.userAgent.toUpperCase().indexOf("MSIE")>-1?false:true;
+				var isChrome=navigator.userAgent.toUpperCase().indexOf("CHROME")>-1?false:true;
+				var keycode ="";
+				if(isFirefox && isMsie && isChrome){
+					keycode =  backspace.caller.arguments[0].which;
+				}else{
+					keycode =event.keyCode;
+				}
+				if(keycode == 8){
+					var pass1= document.getElementById('password');
+					pass1.value=pass1.value.substring(0,pass1.value.length-1);
+
+				}
+
+			}
+			function clearPass(check){
+				var checkval = check.value;
+				if(checkval=="请输入您的密码"){
+					$("#password").val("");
+					$("#pwd").val("");
+				}
+			}
+
+
+			function loginSZ(){
+				//alert("市网厅统一认证入口登录");
+				var serverIPAddr  =  'http://203.91.57.71:8080/am';
+				var cliectRedirectUri =  'http://bsdt.baoan.gov.cn/servlet/OAuthSvtClient';
+			  	var client_id = 'szwb_baoanqu';
+			  	var client_secret =  '123qwe';
+			  	var scope =  'all';
+			  	var redirectUrl = cliectRedirectUri;
+			  //对url进行编码，否则如果使用反向代理则会无法重定向
+		  		redirectUrl = escape(redirectUrl);
+		  		window.location.href= serverIPAddr + "/oauth2/authorize?service=initService&response_type=code&client_id="+client_id+"&scope="+scope+"&redirect_uri="+redirectUrl;
+			}
+		</script>
+
+
+		<!--   ###############################  CA JS   ######################################## -->
+
+
+		<SCRIPT ID=clientEventHandlersJS LANGUAGE=javascript>
+			var strServerSignedData = '';
+			var strServerRan = '';
+			var strServerCert = '';
+			function LoginForm_onsubmit() {
+				var ret;
+				var strContainerName = LoginForm.UserList.value;
+				ret = SZG_Login(LoginForm,strContainerName,strServerRan);
+				return ret;
+			}
+		</SCRIPT>
+		<SCRIPT FOR=bjcactrl EVENT=OnUSBKeyChange LANGUAGE=javascript>
+			function ChangeList(strListID) {
+				var i;
+				var strOption;
+				var strName;
+				var strUniqueID;
+				var objListID = eval(strListID);
+				var strTemp = "";//bjcactrl.GetUserList();
+
+				var n = objListID.length;
+				for(i=0;i<n;i++)
+					objListID.remove(0);
+				var strTemp ="";// bjcactrl.GetUserList();
+				while (1)
+				{
+					i=strTemp.indexOf("&&&");
+					if (i <= 0)
+					{
+						break;
+					}
+					strOption = strTemp.substring(0,i);
+					strName = strOption.substring(0, strOption.indexOf("||"));
+					strUniqueID = strOption.substring(strOption.indexOf("||") + 2, strOption.length);
+					//获取用户签名证书
+					var ucert=bjcactrl.ExportUserCert(strUniqueID);
+					//获取证书唯一标识，证书绑定环节使用，可在插入证书后得到用户唯一标识同系统用户绑定
+					var oid=bjcactrl.GetUserInfoByOid(ucert,"2.16.156.112548");
+					//判断证书中有无证书唯一标识，没有的进行过滤
+					if(oid!=""){
+					var objItem = new Option(strName,strUniqueID)
+					objListID.add(objItem);
+					len = strTemp.length;
+					}
+			    	strTemp = strTemp.substring(i+3,len);
+
+			 	 }
+			}
+			ChangeList("LoginForm.UserList");
+		</SCRIPT>
+
+		<Script Language="JScript" for=window event=OnLoad>
+			function GetList(strListID) {
+				var strTemp="";
+				var strTemp_pnp;
+				var strOption;
+				var len;
+				var strName;
+				var strUniqueID;
+				var objListID = eval(strListID);
+
+				strTemp = SZG_GetUserList();
+				while (1) {
+					i=strTemp.indexOf("&&&");
+					if (i <= 0) {
+						break;
+					}
+					strOption = strTemp.substring(0,i);
+					strName = strOption.substring(0, strOption.indexOf("||"));
+					strUniqueID = strOption.substring(strOption.indexOf("||") + 2, strOption.length);
+					//获取用户签名证书
+					var ucert=SZG_ExportUserCert(strUniqueID);
+					$("#UserCert").val(ucert);
+					//获取证书唯一标识，证书绑定环节使用，可在插入证书后得到用户唯一标识同系统用户绑定
+					var oid=SZG_GetUserInfoByOid(ucert,"2.16.156.112548");
+					//判断证书中有无证书唯一标识，没有的进行过滤
+					if(oid!=""){
+					var objItem = new Option(strName,strUniqueID)
+					objListID.add(objItem);
+					len = strTemp.length;
+					}
+			    strTemp = strTemp.substring(i+3,len);
+
+				}
+				var objListID = null;
+			}
+			GetList("LoginForm.UserList");
+
+
+
+
+		</Script>
+
+		<style type="text/css">
+             .test ul{list-style:none;}
+             .test li{float:left; color:#166087;font-size:15px;padding:5px 0;}
+             .test{position:absolute;left:585px;top:97px;}
+        </style>
+
+
+	</head>
+	<body>
+		<div class="total">
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="/r/cms/jquery.js" type="text/javascript"></script>
+<link href="/r/cms/www/blue_webhall/newcss/css.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/r/cms/captcha.js"></script>
+<script type="text/javascript" src="/r/cms/validateAddMethod.js"></script>
+<style>
+	.ta{color:#0288C5;font-size:14px;font-weight:bold;height:25px;line-height:25px;overflow:hidden;}
+</style>
+<script type="text/javascript">
+	function logout(){
+		if(confirm("确定需要退出吗?"))
+		window.location.href="/logout.jspx?returnUrl=/index2.jspx";
+	}
+	function backIndex(){
+		window.location.href="/";
+	}
+</script>
+<script type=text/javascript>
+function rate(obj,oEvent){
+//==================
+// 图片地址设置
+//==================
+var imgSrc = '/r/cms/www/blue_webhall/xh/index/images/star_2.png'; //没有填色的星星
+var imgSrc_2 = '/r/cms/www/blue_webhall/xh/index/images/star_1.png'; //打分后有颜色的星星
+//---------------------------------------------------------------------------
+if(obj.rateFlag) return;
+var e = oEvent || window.event;
+var target = e.target || e.srcElement;
+var imgArray = obj.getElementsByTagName("img");
+for(var i=0;i<imgArray.length;i++){
+  imgArray[i]._num = i;
+  imgArray[i].onclick=function(){
+  if(obj.rateFlag) return;
+  obj.rateFlag=true;
+  alert("你的评分为"+(this._num+1)+"分，感谢你的参与！"); //this._num+1这个数字写入到数据库中,作为评分的依据
+  };
+}
+if(target.tagName=="IMG"){
+  for(var j=0;j<imgArray.length;j++){
+  if(j<=target._num){
+  imgArray[j].src=imgSrc_2;
+  } else {
+  imgArray[j].src=imgSrc;
+  }
+  }
+} else {
+  for(var k=0;k<imgArray.length;k++){
+  imgArray[k].src=imgSrc_2;
+  }
+}
+}
+</script>
+<TABLE border=0 cellSpacing=0 cellPadding=0 width=1000 align=center>
+	<TBODY>
+		<TR>
+			<TD height=37 background=/r/cms/www/blue_webhall/newimg/topbanner1.jpg>
+				<TABLE border=0 cellSpacing=0 cellPadding=0 width=1000>
+					<TBODY>
+						<TR>
+							<TD height=36 vAlign=center width=180 align=middle>
+								<TABLE border=0 cellSpacing=0 cellPadding=0 width=180 height=21>
+									<TBODY>
+										<TR>
+											<TD height=30 vAlign=top width=60 align=center>
+												<IMG border=0 src="/r/cms/www/blue_webhall/newimg/home.png">
+											</TD>
+											<TD vAlign=center width=200 align=left>
+												<A class=topmenuword href="http://wsbs.sz.gov.cn/shenzhen/home"><FONT
+													style="COLOR: #7acbf4; FONT-SIZE: 12pt" color=#ffffff>返回市办事大厅</FONT>
+												</A>
+											</TD>
+										</TR>
+									</TBODY>
+								</TABLE>
+							</TD>
+							<TD vAlign=center width=661 align=middle>
+								<TABLE border=0 cellSpacing=0 cellPadding=0 width=500>
+									<TBODY>
+										<TR>
+										<TD height=36 vAlign=center width=100 align=middle>
+												<TABLE style="BORDER-RIGHT: #ffffff 2px solid" border=0
+													cellSpacing=0 cellPadding=0 width=100>
+													<TBODY>
+														<TR>
+															<TD height=25 vAlign=center align=middle>
+																<A class=topmenuword href="http://www.baoan.gov.cn/" target="_blank"><FONT
+																	color=#ffffff>区府首页</FONT> </A>
+															</TD>
+														</TR>
+													</TBODY>
+												</TABLE>
+											</TD>
+											<TD height=36 vAlign=center width=100 align=middle>
+												<TABLE style="BORDER-RIGHT: #ffffff 2px solid" border=0
+													cellSpacing=0 cellPadding=0 width=100>
+													<TBODY>
+														<TR>
+															<TD height=25 vAlign=center align=middle>
+																<A class=topmenuword href="/zwgk/index.jspx" target=_self><FONT
+																	color=#ffffff>政务公开</FONT> </A>
+															</TD>
+														</TR>
+													</TBODY>
+												</TABLE>
+											</TD>
+											<TD vAlign=center width=100 align=middle>
+												<TABLE border=0 cellSpacing=0 cellPadding=0 width=100>
+													<TBODY>
+														<TR>
+															<TD height=25 vAlign=center align=middle>
+																<!--<A class=topmenuword href="/tzsp/totzspba.jspx" target=_self><FONT
+																	color=#ffffff>投资审批</FONT> </A>
+															--><A class=topmenuword href="/index5.jspx" target=_self><FONT
+																	color=#ffffff>法人事项</FONT></A></TD>
+														</TR>
+													</TBODY>
+												</TABLE>
+											</TD>
+											<TD vAlign=center background=/r/cms/www/blue_webhall/newimg/menubg1.jpg
+												width=100 align=middle>
+												<TABLE border=0 cellSpacing=0 cellPadding=0 width=100>
+													<TBODY>
+														<TR>
+															<TD height=25 vAlign=center align=middle>
+																<A class=topmenuword href="/index2.jspx" target=_self><FONT
+																	color=#ffffff>个人事项</FONT> </A>
+															</TD>
+														</TR>
+													</TBODY>
+												</TABLE>
+											</TD>
+											<TD vAlign=center width=100 align=middle>
+												<TABLE style="BORDER-RIGHT: #ffffff 2px solid" border=0
+													cellSpacing=0 cellPadding=0 width=100>
+													<TBODY>
+														<TR>
+															<TD height=25 vAlign=center align=middle>
+																<A class=topmenuword href="/hdjl/tohdjl.jspx" target=_self><FONT
+																	color=#ffffff>政民互动</FONT> </A>
+															</TD>
+														</TR>
+													</TBODY>
+												</TABLE>
+											</TD>
+											<TD vAlign=center width=100 align=middle>
+												<TABLE border=0 cellSpacing=0 cellPadding=0 width=100>
+													<TBODY>
+														<TR>
+															<TD height=25 vAlign=center align=middle>
+																<A class=topmenuword href="/xnjc/toxnjc.jspx" target=_self><FONT
+																	color=#ffffff>效能监督</FONT> </A>
+															</TD>
+														</TR>
+													</TBODY>
+												</TABLE>
+											</TD>
+										</TR>
+									</TBODY>
+								</TABLE>
+							</TD>
+							<TD vAlign=center width=150 align=middle>
+								<TABLE border=0 cellSpacing=0 cellPadding=0 width=150 height=21>
+									<TBODY>
+										<TR>
+											<TD height=30 vAlign=center width=30 align=right>
+											</TD>
+											<TD vAlign=center width=120 align=left>
+												<A style="CURSOR: hand" class=topmenuword
+													href="/login.jspx"><FONT
+													style="COLOR: #7acbf4; FONT-SIZE: 12pt">用户登录</FONT> </A>
+											</TD>
+										</TR>
+									</TBODY>
+								</TABLE>
+							</TD>
+						</TR>
+					</TBODY>
+				</TABLE>
+			</TD>
+		</TR>
+		<TR>
+			<TD height=141 onclick='backIndex()' vAlign=bottom background="/r/cms/www/blue_webhall/newimg/xh_topbanner.jpg" title='返回深圳市宝安区分厅首页'
+				width=1000 align=right></TD>
+		</TR>
+	</TBODY>
+</TABLE>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="ta">
+      <tr>
+        <td width="800">&nbsp;</td>
+        <td align="right" >星级评定：</td>
+        <td align="left" onmouseover=rate(this,event) valign="middle">
+           <img src="/r/cms/www/blue_webhall/xh/index/images/star_1.png" alt="" width="17" height="16" vspace="4"/>
+           <img src="/r/cms/www/blue_webhall/xh/index/images/star_1.png" alt="" width="17" height="16" vspace="4" />
+           <img src="/r/cms/www/blue_webhall/xh/index/images/star_1.png" alt="" width="17" height="16"  vspace="4"/>
+           <img src="/r/cms/www/blue_webhall/xh/index/images/star_1.png" alt="" width="17" height="16" vspace="4" />
+           <img src="/r/cms/www/blue_webhall/xh/index/images/star_1.png" alt="" width="17" height="16"  vspace="4"/></td>
+      </tr>
+ </table>			<div class="cont-warp">
+			<div class="sub-tit" style="wwidth: 100%">
+							<img src="/r/cms/www/blue_webhall/newimg/zx-pic5.jpg" align="absmiddle">
+							&nbsp;
+							<a href="/index2.jspx">首页</a>&nbsp;»&nbsp;用户登陆  &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red;font-weight: normal;" id="verInfo"></span>
+						</div>
+				<div class="sbweb_content">
+  <div class="llklogin">
+    <div class="llklogin_con">
+      <div class="tab_common_title rel">
+        <ul class="tab_ul2 abs">
+          <!--
+    	      <li class="selectTag"><a id="gr_dl_a"  onmouseover="selectTag('0',this)">个人用户</a></li>
+	          <li><a id="qy_dl_a" onmouseover="selectTag('1',this)">法人用户</a></li>
+           -->
+           <li class="selectTag"><a id="gr_dl_a"  onclick="selectTag('0',this)">个人用户</a></li>
+	       <li><a id="qy_dl_a" onclick="selectTag('1',this)">法人用户</a></li>
+        </ul>
+      </div>
+      <div class="tab_common_content zong_tagContent">
+      		<div id="user_faren" >
+      		</div>
+        <div id="userLogin" class="tagContent selectTag">
+       	<form id="jvForm" action="/login.jspx" method="post">
+       		<input type="hidden" name="usertype" value="1" id="usertype" />
+          <table  class="table_fix" width="100%" align="center">
+            <!-- <tr>
+              <td><p style="text-align:left; margin:12px;padding-left:10px; height:27px"><a href="#"  class="inline_block"><input type="radio" name="grdl" id="grdl" value="2" checked="checked"/><label for="grdl">普通登录</label></a>&nbsp;&nbsp;<a id="qy_dl" style="display: none" href="#" class="inline_block"><input type="radio" name="grdl" id="grdl" value="2" onclick="onLogin('caLogin');" /><label for="grdl">CA登录</label></a></p></td>
+            </tr> -->
+            <tr>
+              <td style="padding-left:24px;"><input class="login_input_style yh" type="text" name="username" id="username"  value="用户名/手机号/身份证号" onblur="javascript:checkusernameoff(this)" onfocus="javascript:checkusername(this)" maxlength="20"/></td>
+            </tr>
+            <tr>
+              <td style="height:8px;line-height:8px;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding-left:24px;"> <img id="hidePsw" style="width: 30px; height: 22px; position: absolute;  right: 23px; margin: 7px;" src="/r/cms/www/blue_webhall/new/images/kejian.png">
+              <input class="login_input_style mm"  value="请输入您的密码"  maxlength="16" id="pwd" type="text" onblur="javascript:checkpwdoff(this)"   onfocus="javascript:clearPass(this);"
+										onkeyup="javascript:onkeyuppass(this);"  onkeypress="javascript:hiddenPass();"
+										onkeydown="javascript:backspace(this);"  value="请输入您的密码"  maxlength="16"/>
+										<input value="" type="hidden" name="password" id="password" /></td>
+            </tr>
+            <tr>
+              <td style="height:8px;line-height:8px;"></td>
+            </tr>
+            <tr>
+              <td style="padding-left:24px;"><input class="login_input_style yzm" type="text" onkeydown='if(event.keyCode==13){sub()}' name="captcha" autocomplete="off" id="captcha" captcha="true"  captchad="captchad" value="请输入验证码" onfocus="this.value=''" maxlength="16"/></td>
+            </tr>
+            <tr>
+              <td><p align="center" style=" margin:10px 0px 10px;height:24px"><a href="#"><img onclick="sub()" src="/r/cms/www/blue_webhall/new/images/llkloginbtn.png"  alt=""/></a></p></td>
+            </tr>
+            <tr>
+              <td><p align="center" style=" padding-right:23px; line-height:20px;"><a href="javascript:void(0);"  onclick="register()" style="color:#1371cc; font-size:12px;">立即注册</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="member/forgot_password.jspx" style="color:#606060;font-size:12px;">忘记密码？</a></p>										<span style="color: red;" id="amessage"></span>
+										<!--
+										<div class="login-text" style="font-size: 14px;">
+											请注册登录后才能继续刚才的操作
+										</div>
+										 -->
+										<input type="hidden" name="message" id="message"  value="" />
+										<input type="hidden" name="authusername" id="authusername"  value="" />
+										<input type="hidden" name="authpassword" id="authpassword"  value="" />
+
+										<input type="hidden" name="returnUrl" id="returnUrl" value="http://bsdt.baoan.gov.cn/member/reservation_add_new_xf.jspx&res=r%2Fcms%2Fwww%2Fblue_webhall&location=http%3A%2F%2Fbsdt.baoan.gov.cn%2Fmember%2Freservation_add_new_xf.jspx" />
+
+								</td>
+
+            </tr>
+            <tr>
+            	<td><p align="center" style=" padding-right:23px; line-height:20px;"><a href="javascript:void(0);"  onclick="loginSZ()" style="color:#1371cc; font-size:12px;">市网厅统一认证入口登录</a></p></td>
+            </tr>
+          </table>
+        </div>
+
+
+          </form>
+        </div>
+        <form id="LoginForm" action="/caLogin.jspx" method="post" onsubmit="return LoginForm_onsubmit()">
+								<div id="caLogin" style="display: none">
+							 <table  class="table_fix" width="100%" align="center" style="line-height: 32px;">
+							  <!-- <tr>
+             					 <td><p style="text-align:left; margin:12px;padding-left:10px; height:27px"><a href="#"  class="inline_block"><input onclick="qyptdl()" type="radio" name="qydl" id="qydl" value="2" /><label for="qydl">普通登录</label></a>&nbsp;&nbsp;<a  href="#" class="inline_block"><input type="radio" name="qydl" id="qydl" checked="checked" onclick="onLogin('caLogin');" value="1" /><label for="qydl">CA登录</label></a></p></td>
+            					</tr> -->
+							 	 <tr>
+             						 <td style="padding-left:24px;">  选择证书：
+                                      <select id="UserList" name="userName"></select>
+                                      <input type="hidden" ID="UserSignedData" name="UserSignedData">
+									  <input type="hidden" ID="UserCert" name="UserCert">
+									  <input type="hidden" ID="ContainerName" name="ContainerName"></td>
+           				 		</tr>
+           				 		 <tr>
+             						 <td style="padding-left:24px;">如果您还未安装CA证书应用环境，<br>请点击下方链接下载安装程序。</td>
+           				 		</tr>
+           				 		 <tr>
+             						 <td style="padding-left:24px;"><a  style="color:#1371cc" href="/ca/cazsyyhjazb.zip" hidefocus="hidefocus">CA证书应用环境下载</a></td>
+           				 		</tr>
+           				 		 <tr>
+             						 <td style="padding-left:24px;"><a href="#" style="color:#1371cc" onclick="caRegister()">CA用户没有注册？点此处注册！</a></td>
+           				 		</tr>
+           				 		<tr>
+             						 <!-- <td style="padding-left:5px;"><p align="center" style="margin:10px 0px 10px;height:34px"><a href="#"><img onclick="caSub()" src="/r/cms/www/blue_webhall/new/images/llkloginbtn.png"  alt=""/></a></p></td> -->
+             						 <td style="padding-left:5px;"><input type="submit"  style="margin:10px 0px 10px 10px;width:210px;height:34px;background:transparent url(/r/cms/www/blue_webhall/new/images/llkloginbtn.png) no-repeat;" value="" name="B1"/><!-- <p align="center" style="margin:10px 0px 10px;height:34px"><a href="#"><img onclick="caSub()" src="/r/cms/www/blue_webhall/new/images/llkloginbtn.png"  alt=""/></a> </p>--></td>
+           				 		</tr>
+           				 		<tr>
+              						<td style="height:8px;line-height:8px;"></td>
+            					</tr>
+							 </table>
+
+								</div>
+								</form>
+      </div>
+    </div>
+  </div>
+</div>
+
+			<div class="spacing"></div>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<div class="mid-warp" style="text-align:left;">
+	<div class="zx-box-tt">
+		<div class="zx-box-tt-r">
+			<div class="zx-box-tt-c">
+				<div class="zx-box">
+					<div class="zx-box-tit">
+						<img src="/r/cms/www/blue_webhall/newimg/zx-pic.jpg" align="absmiddle" />
+						<a href="/hdjl/wszx/toadd.jspx" target="_blank">我要咨询</a>
+					</div>
+					<div class="zx-box-text">
+						在办事过程中，有什么不清楚吗？请点击我咨询！
+					</div>
+				</div>
+				<div class="zx-line"></div>
+				<div class="zx-box">
+					<div class="zx-box-tit">
+						<img src="/r/cms/www/blue_webhall/newimg/zx-pic1.jpg" align="absmiddle" />
+						<a href="/presearch.jspx" target="_blank">我要查询</a>
+					</div>
+					<div class="zx-box-text">
+						您可以根据网上申办流水号和申办者查询办事进度和结果！
+					</div>
+				</div>
+				<div class="zx-line"></div>
+				<div class="zx-box">
+					<div class="zx-box-tit">
+						<img src="/r/cms/www/blue_webhall/newimg/zx-pic2.jpg" align="absmiddle" />
+						<a href="/precounsel_1.jspx" target="_blank">我要评议</a>
+					</div>
+					<div class="zx-box-text">
+						欢迎对我们网上服务提出宝贵意见！
+					</div>
+				</div>
+				<div class="zx-line"></div>
+				<div class="zx-box">
+					<div class="zx-box-tit">
+						<img src="/r/cms/www/blue_webhall/newimg/zx-pic3.jpg" align="absmiddle" />
+						<a href="/hdjl/wsts/toadd.jspx" target="_blank">我要投诉</a>
+					</div>
+					<div class="zx-box-text">
+						您的投诉将由被投诉部门及监察机关处理！
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="spacing"></div>
+<div align='center'>
+ <table border="0" cellspacing="0" cellpadding="0" width="1000" align="center">
+   <tbody>
+    <tr>
+     <td bgcolor="#28467a">
+      <table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
+       <tbody>
+        <tr>
+         <!-- 政府网站找错 -->
+         <td><script id="_jiucuo_" sitecode="4403060014" src="http://pucha.kaipuyun.cn/exposure/jiucuo.js"></script></td>
+         <!-- 党政机关 -->
+         <td width="70" align="center"> <a href="http://bszs.conac.cn/sitename?method=show&amp;id=54415F69CEC660FBE053022819ACC684" target="_blank"><img src="/r/cms/www/blue_webhall/ba/indeximages/dzjg.png" style="border: 0" /></a> </td>
+         <td width="70" align="center"><img src="/r/cms/www/blue_webhall/ba/indeximages/index_07.jpg" width="50" height="31" /></td>
+         <td width="930">
+          <table border="0" cellspacing="0" cellpadding="0" width="100%">
+           <tbody>
+            <tr>
+             <td width="642" rowspan="2" style="FONT-FAMILY: '宋体'; COLOR: #ffffff; FONT-SIZE: 14px;text-align: left;">主办单位：宝安区人民政府&nbsp;&nbsp; <br /> <br /> 承办单位：深圳市宝安区政务服务局&nbsp;&nbsp;<font style="COLOR: #66ccff;">粤ICP备110162397号-7</font></td>
+             <td width="358" height="26" align="left" style="COLOR: #ffffff; FONT-SIZE: 12px"> <a href="/show/wangzhanditu.jspx" style="color:#66ccff;text-decoration:none;font-size:12px;">网站地图</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="/show/shiyongbangzhu.jspx" style="color:#66ccff;text-decoration:none;font-size:12px;">使用帮助</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="/show/lianxiwomen.jspx" style="color:#66ccff;text-decoration:none;font-size:12px;">联系我们</a>&nbsp;&nbsp;&nbsp;</td>
+            </tr>
+            <tr>
+             <td style="COLOR: #66ccff; FONT-SIZE: 12px" height="26" align="left"> 建议使用1024&times;768分辨率 IE8.0以上版本浏览器 </td>
+            </tr>
+           </tbody>
+          </table></td>
+        </tr>
+       </tbody>
+      </table> </td>
+    </tr>
+   </tbody>
+  </table>
+</div>		</div>
+	</body>
+</html>
+<script  type="text/javascript">
+
+var getUrl = function() {
+    var url = window.location.href;
+    var paraString = url.substring(url.indexOf( "?") + 1, url.length).split("&" );
+    //参数组
+    var paraObj = {}
+    for (i = 0; j = paraString[i]; i++) {
+        paraObj[j.substring(0, j.indexOf( "=")).toLowerCase()] = j.substring(j.indexOf("=" ) + 1, j.length);
+    }
+    return paraObj;
+};
+
+
+//获取url中某参数的值
+var getParam = function(params,param){
+        var returnValue = params[param.toLowerCase()];
+        if (typeof (returnValue) == "undefined") {
+           return "" ;                     //不存在，返回""
+       } else {
+           return returnValue;  //存在，返回
+       }
+}
+
+
+var url = window.location.href;
+var params = getUrl(url);
+$("#amessage").html(decodeURI(getParam(params,"errors")));
+
+
+function selectTag(showContent,selfObj){
+	var tabhtml = "<p style='text-align:left; margin:8px;padding-left:10px; height:27px'>&nbsp;&nbsp;<a href='#' id='gr_dl_d' style='display: none;' onclick='qyptdl()'  class='inline_block'><input type='radio' name='grdl_select' id='grdl_select' value='1' checked='checked'/><label for='grdl_select'>&nbsp;普通登录</label></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a id='qy_dl' style='display: none;' href='#' class='inline_block'><input type='radio' name='grdl_select' id='grdl_select1' value='2' onclick='onLogin(caLogin);' /><label for='grdl_select1'>&nbsp;CA登录</label></a></p>";
+
+	if(0== showContent){
+		$("#user_faren").html("&nbsp;");
+
+		$("#qy_dl").css("display","none");
+		$("#gr_dl_d").css("display","none");
+		$("#caLogin").css("display","none");
+		$("#gr_dl_a").css("color","#1371cc");
+		$("#qy_dl_a").css("color","gray");
+		   document.getElementById('userLogin').style.display='block';
+		$("ul").find("li").eq(0).addClass("selectTag");
+		$("ul").find("li").eq(1).removeClass("selectTag");
+
+		$("#usertype").val("1");
+//		$("#username").val("用户名/手机号/身份证号");
+	}else if(1==showContent){
+		//$("#user_faren").html(tabhtml);
+		document.getElementById("user_faren").innerHTML=tabhtml;
+		$("#qy_dl").css("display","inline");
+		$("#gr_dl_d").css("display","inline");
+		$("#gr_dl_a").css("color","gray");
+		$("#qy_dl_a").css("color","#1371cc");
+
+		$("ul").find("li").eq(1).addClass("selectTag");
+		$("ul").find("li").eq(0).removeClass("selectTag");
+		$("#usertype").val("2");
+	//	$("#username").val("请输入用户名或经办人手机号");
+	}
+}
+
+function qyptdl(){
+	document.getElementById('userLogin').style.display='block';
+    document.getElementById('caLogin').style.display='none';
+
+
+}
+
+$("#user_faren").html("&nbsp;");
+
+function myBrowser(){
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+   // alert(userAgent);
+    var isOpera = userAgent.indexOf("Opera") > -1;
+    if (isOpera) {
+        return "Opera"
+    }; //判断是否Opera浏览器
+    if (userAgent.indexOf("Firefox") > -1) {
+        return "火狐";
+    } //判断是否Firefox浏览器
+    if (userAgent.indexOf("Chrome") > -1){
+  return "Chrome";
+ }
+    if (userAgent.indexOf("Safari") > -1) {
+        return "Safari";
+    } //判断是否Safari浏览器
+    if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+        return "IE";
+    }; //判断是否IE浏览器  IE10、11 区分识别
+    if (!!window.ActiveXObject || "ActiveXObject" in window)
+    	return "IE";
+
+}
+//以下是调用上面的函数
+var mb = myBrowser();
+if ("IE" == mb) {
+	 FuckInternetExplorer();
+}else{
+	$("#verInfo").html("温馨提示：您使用的浏览器类型或版本可能对业务申报有影响，建议使用1024×768分辨率 IE8.0以上版本浏览器！");
+ 	/*var r=confirm("您使用的浏览器可能不支持在线申报表格控件，部分信息无法正确保存或提交，会影响申报业务成功率和审核通过率，请您下载安装适合当前操作系统的最新版本IE浏览器再进行申报！")
+  if (r==true)
+     {
+    window.location.href = "https://support.microsoft.com/zh-cn/help/17621/internet-explorer-downloads";
+     }*/
+	//alert("温馨提示：您当前使用的是"+mb+"浏览器,建议使用1024×768分辨率 IE8.0以上版本浏览器");
+	//window.location.href = "/index2.jspx";
+}
+
+
+
+ FuckInternetExplorer()
+    function FuckInternetExplorer() {
+        var browser = navigator.appName;
+        var b_version = navigator.appVersion;
+        var version = b_version.split(";");
+		if (version.length > 1) {
+			 var trim_Version = parseInt(version[1].replace(/[ ]/g, "").replace(/MSIE/g, ""));
+			 if (trim_Version < 8) {
+					//alert("您使用的浏览器可能不支持在线申报表格控件，部分信息无法正确保存或提交，会影响申报业务成功率和审核通过率，请您下载安装适合当前操作系统的最新版本IE浏览器再进行申报！");
+					$("#verInfo").html("温馨提示：您使用的浏览器类型或版本可能对业务申报有影响，建议使用1024×768分辨率 IE8.0以上版本浏览器！");
+					 /*var r=confirm("您使用的浏览器可能不支持在线申报表格控件，部分信息无法正确保存或提交，会影响申报业务成功率和审核通过率，请您下载安装适合当前操作系统的最新版本IE浏览器再进行申报！")
+					  if (r==true)
+				      {
+					    window.location.href = "https://support.microsoft.com/zh-cn/help/17621/internet-explorer-downloads";
+				      }*/
+					//window.location.href = "/index2.jspx";
+			     return false;
+			 }
+		}
+    }
+
+</script>
