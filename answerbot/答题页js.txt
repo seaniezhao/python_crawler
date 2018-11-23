@@ -1,0 +1,287 @@
+(function() {
+    let Arr = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+    let g = Math.floor(Math.random() * Arr.length + 1) - 1;
+    let k = new Date().getTime();
+    
+    let h = "00";
+    let m = "00";
+    let s = "00";
+    
+    $.ajax({
+    	url: "/sx-answer/pc/questions/data",
+    	dataType:"json",
+    	success:function(data){
+    		 fo.fun(data.data.data);
+    		 h = data.data.hh;
+    		 m = data.data.mm;
+    		 s = data.data.ss;
+    		 
+    		let t = window.setInterval(function() {
+		        fo.timing();
+		    }, 1000);
+    	},
+    	error:function(data){
+    		layer.msg("操作失败！",{icon: 0,time :1000});
+    	}
+	});
+    let fo = {};
+    fo.s = 0;
+    fo.fun = function(d) {
+        let choice = ['A', 'B', 'C', 'D'];
+        let domQuestion = $(".question");
+        //1.计算canvas.width
+        let w = $(".question-list").width() - 60;
+
+        let a = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+        function getQ(i){
+            //添加li元素
+            $(".question-list").html("<li class='question-item'><div class='question table'></div><div class='options table'></div></li>");
+
+            let questionStr = d[i].content;
+
+            let canvas = document.createElement("canvas");
+            canvas.width = w;
+
+            //2.计算canvas的h
+            //3.标题
+            let ctx = canvas.getContext('2d');
+            let tf = 24;
+            //4.小字单选题
+            let sf = 12;
+            let sx = tf * 3 + 8;
+            let sy = sf + (tf + 4 - sf) / 2;
+            //5.问题
+            let qf = 16;
+            let qx = sx + (sf * 5) + 10;
+            let qy = qf + (tf + 4 - qf) / 2;
+            let q = Math.floor((w - qx) / qf);
+            let h = Math.ceil((questionStr.length) / q);
+            var qh = qy * h + 5 * (h - 1) + (qf / 2) + 60;
+            //6.答案
+            let af = 14;
+            let ax = 30;
+            let asy = (af + 4) / 2;
+            let wn = Math.floor((w - ax * 2) / af); //每行显示的字数
+            let ar = 0;
+            let al = d[i].ans.length;
+            for(let a = 0; a < al; a++) {
+                let aStr = choice[a] + "、 " + d[i].ans[a].content;
+                let rows = Math.ceil((aStr.length) / wn); //多少行
+                qh = asy * rows + 18 * (rows - 1) + qh + 30;
+            }
+            canvas.height = qh + 30;
+            //3.标题
+            ctx.beginPath();
+            ctx.font = tf + "px '微软雅黑'";
+            ctx.fillStyle = "#7d7d7d";
+            ctx.fillText("第" + a[i] + "题", 0, tf);
+            ctx.closePath();
+
+            //4.小字单选题
+            ctx.beginPath();
+            ctx.font = sf + "px '微软雅黑'";
+            ctx.fillStyle = "#69bd90";
+            ctx.fillText("（单选题）", sx, sy);
+            ctx.closePath();
+
+            //5.问题
+            ctx.beginPath();
+            ctx.font = qf + "px '微软雅黑'";
+            ctx.fillStyle = "#434343";
+            let qr = 0;
+            for(let s = 0; s < h; s++) {
+                ctx.fillText(questionStr.substr((q) * s, q), qx, qy * (s + 1) + 5 * s);
+                qr = qy * (s + 1) + 5 * s + (qf / 2);
+            }
+            ctx.closePath();
+
+            //6.答案
+            let ay = qr + 60;
+            ctx.beginPath();
+            ctx.font = af + "px '微软雅黑'";
+            ctx.fillStyle = "#787878";
+            for(let a = 0; a < al; a++) {
+                let aStr = choice[a] + "、 " + d[i].ans[a].content;
+                let rows = Math.ceil((aStr.length) / wn); //多少行
+                let t = 0;
+
+                for(let sa = 0; sa < rows; sa++) {
+                    let b = 0;
+                    let y = 0;
+                    if(sa > 0) {
+                        b = 20;
+                        y = 18;
+                    }
+                    ctx.fillText(aStr.substr((wn) * sa, wn), ax + b, asy * (sa + 1) + y * sa + ay);
+                    t = asy * (sa + 1) + y * sa + ay;
+                }
+                ay = t + 30;
+
+                //添加选项元素
+                $(".question-list li .options").append("<div class='table-cell'><p class='table' " + Arr[g] + k + "='" + d[i].ans[a].id + "'><span class='table-cell text-r'><i class='iconfont'>&#xe72f;</i><i class='iconfont yes'>&#xe71f;</i></span><span class='table-cell text-l'>" + choice[a] + "</span></p></div>")
+            }
+            ctx.closePath();
+            $(".question-list li .question").append(canvas);
+        }
+        
+
+        getQ(fo.s);
+
+        //下一题点击
+        $(".next-question").click(function(){
+        	if(!(resA[fo.s])){
+    			layer.msg('您还没有选择答案哦！',{time:1000});
+    		}else if(fo.s===(d.length-1)){
+    			layer.msg("已经是最后一题了哦！",{time:1000});
+    		}else{
+            	fo.s = fo.s+1;
+    			getQ(fo.s);
+    		}
+        })
+    }
+
+    //选项点击
+    let resA = [];
+    $(".question-list").on('click','.options p',function() {
+        let isOn = $(this).find('.text-r').attr('class');
+        let parents = $(this).parents(".options");
+        parents.find(".text-r").removeClass('on');
+        $(this).find('.text-r').addClass('on');
+        let j = $(this).attr(Arr[g] + k);
+        let index = parents.parents(".question-item").index();
+        resA[fo.s] = j;
+    });
+
+    //计时
+
+    //  let h = $ {
+    //      hh
+    //  };
+    //  let m = $ {
+    //      mm
+    //  };
+    //  let s = $ {
+    //      ss
+    //  };
+
+
+    fo.timing = function() {
+        if(s == 59) {
+            s = -1;
+
+            //分+1
+            m = parseInt(m) + 1;
+            if(m == 60) {
+                m = 0;
+                //时+1
+                h = parseInt(h) + 1;
+                if(h < 10) {
+                    h = "0" + h;
+                }
+            }
+            if(m < 10) {
+                m = "0" + m;
+            }
+        }
+
+        s = parseInt(s) + 1;
+        if(s < 10) {
+            s = "0" + s;
+        }
+        $(".s").text(s);
+        $(".m").text(m);
+        $(".h").text(h);
+    }
+ 
+    fo.logout = function() {
+        layer.msg('退出后消耗本次答题机会，答案将会全部以错误记录！您确定要退出吗？', {
+            time: 0 //不自动关闭
+                ,
+            icon: 0,
+            btn: ['不用想了', '我再想想'],
+            yes: function(index) {
+                layer.close(index);
+
+                var myDate = new Date();
+                myDate.setTime(-1000); //设置时间    
+                var data = document.cookie;
+                var dataArray = data.split("; ");
+                for(var i = 0; i < dataArray.length; i++) {
+                    var varName = dataArray[i].split("=");
+                    document.cookie = varName[0] + "=''; expires=" + myDate.toGMTString();
+                }
+                window.location = "/sx-answer/index";
+            }
+        });
+    }
+
+    fo.sub = function() {
+        var answers;
+        var go = true;
+        if(resA.length<=0){
+            go = false;
+            layer.msg('尚有未选择答案的题目', {icon: 0,time :1000});
+            return;
+        }
+        for(let c=0;c<$(".question-item").length;c++){
+            if(!resA[c]){
+                go = false;
+                layer.msg('尚有未选择答案的题目', {icon: 0,time :1000});
+                return;
+            }
+        }
+        if(go) {
+            layer.msg('提交后将不能修改,请确认提交', {
+                time: 0 //不自动关闭
+                    ,
+                icon: 0,
+                btn: ['不用想了', '我再想想'],
+                yes: function(index) {
+                    layer.close(index);
+                    $.ajax({
+                        url: "/sx-answer/pc/result",
+                        method: "post",
+                        data: {
+                            "answers": resA
+                        },
+                        dataType: "json",
+                        success: function(data) {
+                            if(data.status == 200) {
+                                window.location = "/sx-answer/pc/show";
+                            } else {
+                                if(data.msg == "surpass") {
+                                    layer.msg("您的答题时间超过60分钟，本次答题无效！");
+                                    setTimeout(function() {
+                                        window.location = "/sx-answer/index";
+                                    }, 3000);
+                                }
+                                if(data.msg == "unusual") {
+                                    layer.msg("系统检测您的答题时间存在异常，请重新作答！");
+                                    setTimeout(function() {
+                                        window.location = "/sx-answer/index";
+                                    }, 3000);
+                                }
+                                if(data.msg == "time") {
+                                    layer.msg("提交失败！请重试！");
+                                    setTimeout(function() {
+                                        window.location = "/sx-answer/index";
+                                    }, 2000);
+                                }
+                                if(data.msg == "logout") {
+                                    layer.msg("登录失效请重新刷新页面");
+                                    setTimeout(function() {
+                                        window.location = "/sx-answer/index";
+                                    }, 2000);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    $(".papers").click(function(e) {
+        fo.sub();
+    })
+})()

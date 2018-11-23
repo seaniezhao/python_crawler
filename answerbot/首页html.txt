@@ -1,0 +1,341 @@
+
+layui.use('layer');
+var layer = layui.layer;
+var yzm;
+	$.ajax({
+    	url: "http://lx.djfy365.com/sx-answer/pc/getUserInfo",
+    	
+    	dataType:"json",
+    	success:function(data){
+    		if(data.status == 200){
+    			$(".login-btn").hide();
+    			$(".reg-btn").hide();
+    			$(".forget-pwd").hide();
+    			$("#loginUser").val(data.data.id);
+    			$("#counts").val(data.data.counts);
+    			$(".leave-word").before("<div class='login table-cell'><h4><a href='http://lx.djfy365.com/sx-answer/pc/personal'>"+data.data.name+"</a></h4></div><div class='login table-cell'><div class='btn' onclick='logout();'>退出</div></div>");
+    			$(".login-popup").fadeOut();
+    			  //点击留言簿
+				$(".leave-word .btn").click(function(){
+				    $(".leave-box").fadeIn();
+				});
+    		}
+    	}
+	});
+
+
+	function customSelect() {
+	   //点击P标签切换下拉框
+	    $('.select').on('click','p', function(event) {
+	        var parents = $(this).parent();
+	        $(".select").not(parents).removeClass("open");
+	        parents.toggleClass('open');
+	        event.stopPropagation();
+	        //让input-wrap置底
+	        setTimeout(function() {
+	            var selectUlH = (parents.find("li").length) * 40;
+	            var inputWrapH = parents.find('.input-wrap').height();
+	            var inputWrapChildDivH = parents.find('.input-wrap>Div').height();
+	        }, 300)
+	    });
+	    //点击li标签,赋值、切换下拉框、给选中的li标签添加选中样式同级元素移除选中样式、阻止事件冒泡
+	    $('.select').on('click','li', function(event) {
+	            var _this = $(this);
+	            var parents = _this.parents(".select");
+	            parents.find('p').text(_this.text());
+	            parents.toggleClass('open');
+	           	parents.find('.partyBranch').val(_this.attr('data-value'));
+	            _this.addClass('selected').siblings().removeClass('selected');
+	            event.stopPropagation();
+	            
+	            if(_this.text() == "群众"){
+	            	$("input[name='threeOrganization']").val("");
+		        	$("input[name='threeOrganization']").attr("disabled","disabled");
+	            }else if(_this.text() == "党员" || _this.text() == "预备党员"  || _this.text() == "入党积极分子"){
+	            	$("input[name='threeOrganization']").removeAttr("disabled");
+	            }else{
+	            	var labelText = $(this).parents(".input-box").find("label").text();
+			    	if(labelText === "请选择您所属的党委/工委："){
+			    		$(".danwei").find(".select>p").text("所有选项");
+			    		$(".danwei").find(".partyBranch").val("");
+			    		if(_this.attr('data-value') != "0"){
+			            	$.ajax({
+						    	url: "http://lx.djfy365.com/sx-answer/organization",
+						    	data:{
+						    		"pid":_this.attr('data-value')
+						    	},
+						    	dataType:"json",
+						    	success:function(data){
+						    		if(data.status == 200){
+						    			$("#org-ul").empty();
+						    			$("#org-ul").append("<li data-value='0'>所有选项</li>");
+						    			$.each(data.data,function(i,v){
+						    				$("#org-ul").append("<li data-value='"+v.id+"'>"+v.name+"</li>");
+						    			});
+						    		}else{
+						    			layer.open({
+										    content: '系统出错！'
+										    ,skin: 'msg'
+										    ,time: 2 //2秒后自动关闭
+										});	
+						    		}
+						    	}
+					    	});
+			        	}
+			    	}
+	            }
+	        })
+	        //点击除下拉框的其它地方，收起下拉框
+	    $(document).on('click', function() {
+	        $('.select').removeClass('open');
+	    })
+	}
+            
+//            function rankAni(){
+//                var singH = $(".rank .content .rank-body .table-cell").height();
+//                window.setInterval(function(){
+//                    var top = parseInt($(".rank-body-box").css('top'));
+//                    var newT = top-singH;
+//                    $(".rank-body-box").animate({top:},500);
+//                },3000);
+//            }
+    window.onload = function(){
+        customSelect();
+        
+        //点击shade关闭弹窗
+        $(".shade").click(function(){
+            $(".popup").fadeOut();
+            $(".login-popup").fadeOut();
+        });
+        $(".reg-btn").click(function(){
+            $(".fill-info-wrap").fadeIn();
+        });
+        //排行榜
+        $(".rank-body").each(function(index){
+            if(index%2===1){
+                $(this).addClass('even');
+            }
+        })
+        $(".login-btn").click(function(){
+           	$(".login-popup").fadeIn();
+        });
+        
+        
+		// 通知公告
+		$(".slogan .text").slide({
+		    mainCell:"p",
+		    autoPlay:true,
+		    effect:"leftMarquee",
+		    vis:1,
+		    interTime:50 
+		})
+	    //留言簿
+	    $(".leave-list .content").slide({
+                    mainCell:".rank-body-wrap .rank-body-box",
+                    autoPlay:true,
+                    effect:"topMarquee",
+                    interTime:80,
+                    delayTime:1000,
+                    vis:5,
+                })
+                
+        $(".forget-pass a").click(function() {
+					$(".modify-pass").fadeIn();
+				});
+				
+		//验证码
+		var t;
+		var initS = 60;
+		$(".verify-box .verify").click(function(){
+			var telphone = $("input[name='forget-telphone']").val();
+	    	if(telphone == ""){
+	    		layer.msg('请输入手机号', {icon: 0,time :1000});
+	    		return;	
+	    	}else{
+	    		if(!(/^1[34578]\d{9}$/.test(telphone))){ 
+		       	 	layer.msg('请输入正确的手机号码', {icon: 2,time :1000}); 
+		       	 	return; 
+	    		}
+	    	}
+		
+		
+			var that = this;
+			var classN = $(that).attr('class');
+			if(classN.indexOf('already')<0){
+				$(that).addClass('already');
+				t = window.setInterval(function(){
+					initS--;
+					$(that).text(initS+'s');
+					if(initS===0){
+						initS = 60;
+						window.clearInterval(t);
+						$(that).html("获取<br/>验证码");
+						$(that).removeClass('already');
+					}
+				},1000)
+			}
+			
+			$.ajax({
+		    	url: "http://lx.djfy365.com/sx-answer/api/note",
+		    	data:{
+		    		"tel":telphone
+		    	},
+		    	dataType:"json",
+		    	success:function(data){
+		    		if(data.status == 200){
+		    		
+		    		}else{
+		    			layer.msg("请重新刷新页面");
+		    		}
+		    	},
+		    	error:function(data){
+		    		layer.msg("操作失败！",{icon: 0,time :1000});
+		    	}
+	    	});
+		})
+    }
+    function login(){
+    	var telphone = $("input[name='telphone']").val();
+    	var password = $("input[name='password']").val();
+    	if(telphone == ""){
+    		layer.msg('请输入手机号', {icon: 0,time :3000});
+    		return;
+    	}
+    	if(password == ""){
+    		layer.msg("请输入密码", {icon: 0,time :1000});
+    		return;
+    	}
+    	$.ajax({
+	    	url: "http://lx.djfy365.com/sx-answer/pclogin",
+	    	data:{
+	    		"telphone":telphone,
+	    		"password":password
+	    	},
+	    	dataType:"json",
+	    	cache: false,//不保存缓存
+	    	async: false,
+	    	beforeSend: function() {
+		        $("#loginbtn").attr({ disabled: "disabled" });
+		   	},
+	    	success:function(data){
+	    		$("#loginbtn").attr("disabled",false); 
+	    		if(data.status == 200){
+	    			//保存puserId
+	    			document.cookie="p-token="+data.data+"; path=/";;
+	    			window.location.reload();
+	    		}else{
+	    			if(data.msg == "login"){
+	    				layer.msg("您的帐号正在登录中", {icon: 2,time :1000});
+	    			}else{
+	    				layer.msg("帐号或密码错误", {icon: 2,time :1000});
+	    			}
+	    		}
+	    	}
+    	});
+    }
+    
+    function logout(){
+		var myDate=new Date();    
+        myDate.setTime(-1000);//设置时间    
+        var data=document.cookie;    
+        var dataArray=data.split(";");    
+        for(var i=0;i<dataArray.length;i++){    
+             var varName=dataArray[i].split("=");    
+             document.cookie=varName[0]+"=''; expires="+myDate.toGMTString()+"; path=/";
+        }   
+		window.location.reload();
+    }
+    
+    function begin(){
+	    if($("#loginUser").val() == ""){
+	    	layer.msg("您尚未登录,请在页面右上角进行登录操作！",{icon: 0,time :2000});
+	    	scrollTo(0,0);
+	    }else{
+	    	var go = true;
+	    	$.ajax({
+		    	url: "http://lx.djfy365.com/sx-answer/pc/countCheck",
+		    	dataType:"json",
+		    	async: false,
+		    	success:function(data){
+		    		if(data.status == 200){
+		    			if(data.data == "1" || data.data == "3" || data.data == "6"){
+							layer.msg("今日次数已用完,微信分享活动链接可增加且只增加一次答题机会！",{icon: 0,time :3000});
+				    		go = false;
+				    	}
+		    		}else{
+		    			if(data.msg == "supplement"){
+		    				layer.confirm('您的帐号需要先补充信息！', {
+							  btn: ['前往编辑'] //按钮
+							}, function(){
+							  window.location = "http://lx.djfy365.com/sx-answer/pc/personal";
+							});
+				    		go = false;
+		    			}
+		    			if(data.msg == "mobile"){
+							layer.msg("您的帐号正在手机端答题，请检查。",{icon: 0,time :2000});
+				    		go = false;
+				    	}
+				    	if(data.msg == "wh"){
+							layer.msg("谢谢您的参与，答题时间为5:00--24:00!",{icon: 0,time :2000});
+				    		go = false;
+				    	}
+				    	if(data.msg == "start"){
+							layer.msg("活动尚未开始，感谢您的支持！",{icon: 0,time :2000});
+				    		go = false;
+				    	}
+				    	if(data.msg == "end"){
+							layer.msg("活动已经结束，感谢您的支持！",{icon: 0,time :2000});
+				    		go = false;
+				    	}
+				    	go =false;
+		    		}
+		    	},
+		    	error:function(data){
+		    		layer.msg("操作失败！",{icon: 0,time :1000});
+		    	}
+    		});
+    	
+	    	if(go){
+		    	layer.msg('点击开始答题后系统将进行计时操作，点击【交卷】后结束计时，如果您已经准备好请点击确定', {
+				  time: 0 //不自动关闭
+				  ,icon:0
+				  ,btn: ['确定', '取消']
+				  ,yes: function(index){
+				    layer.close(index);
+						window.location = "http://lx.djfy365.com/sx-answer/pc/questions";
+				  }
+				})
+	    	}
+	    }
+    }
+    function forgetSub(){
+	    var telphone = $("input[name='forget-telphone']").val();
+    	if(telphone == ""){
+    		layer.msg('请输入手机号', {icon: 0,time :1000});
+    		return;	
+    	}
+    	var yz = $("input[name='forget-verify']").val();
+    	
+    	var yzflag = true;
+    	if(yz == ""){
+    		layer.msg('请输入验证码', {icon: 0,time :1000});
+    		return;	
+    	}else{
+    		$.ajax({
+		    	url: "http://lx.djfy365.com/sx-answer/yzm/check",
+		    	async: false,
+		    	data:{
+		    		tel:telphone,
+		    		yz:yz
+		    	},
+		    	dataType:"json",
+		    	success:function(data){
+		    		if(data.status == 200){
+		    		
+		    		}else{
+		    			yzflag = false;
+		    		}
+		    	}
+    		});
+    	}
+    	if(!…
